@@ -88,32 +88,50 @@ export function pixelateImage(
       const y0 = Math.floor(row * cellH);
       const y1 = Math.floor((row + 1) * cellH);
 
-      let rSum = 0, gSum = 0, bSum = 0, aSum = 0, count = 0;
+      // Em vez de tirar a média de cor da célula (que mistura pixels de
+      // contorno/antialiasing com a cor de fundo e gera tons de cinza
+      // indesejados), votamos pela cor predominante (moda) entre os pixels
+      // visíveis da célula. Isso preserva áreas chapadas (ex: o branco do
+      // olho) mesmo quando há pixels de borda mais escuros misturados.
+      let totalPixels = 0;
+      let opaquePixels = 0;
+      const votes = new Map<string, { color: BeadColor; weight: number }>();
 
       for (let y = y0; y < y1; y++) {
         for (let x = x0; x < x1; x++) {
+          totalPixels++;
           const idx = (y * canvas.width + x) * 4;
           const a = data[idx + 3];
-          rSum += data[idx] * a;
-          gSum += data[idx + 1] * a;
-          bSum += data[idx + 2] * a;
-          aSum += a;
-          count++;
+          if (a < alphaThreshold) continue;
+
+          opaquePixels++;
+          const match = nearestBeadColor(data[idx], data[idx + 1], data[idx + 2]);
+          const weight = a / 255;
+          const existing = votes.get(match.id);
+          if (existing) {
+            existing.weight += weight;
+          } else {
+            votes.set(match.id, { color: match, weight });
+          }
         }
       }
 
-      const avgAlpha = count > 0 ? aSum / count : 0;
-
-      if (avgAlpha < alphaThreshold || aSum === 0) {
+      // Célula é considerada vazia se a maior parte dela for transparente.
+      if (totalPixels === 0 || opaquePixels / totalPixels < 0.35) {
         rowCells.push({ color: null });
         continue;
       }
 
-      const r = rSum / aSum;
-      const g = gSum / aSum;
-      const b = bSum / aSum;
+      let winner: BeadColor | null = null;
+      let bestWeight = -1;
+      for (const { color, weight } of votes.values()) {
+        if (weight > bestWeight) {
+          bestWeight = weight;
+          winner = color;
+        }
+      }
 
-      rowCells.push({ color: nearestBeadColor(r, g, b) });
+      rowCells.push({ color: winner });
     }
     grid.push(rowCells);
   }
