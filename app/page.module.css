@@ -71,6 +71,60 @@
   padding: 22px;
 }
 
+.brandRow {
+  margin-bottom: 18px;
+}
+
+.brandLabel {
+  display: block;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+
+.brandOptions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.brandBtn {
+  flex: 1;
+  min-width: 160px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--white);
+  padding: 10px 14px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brandBtn span {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.brandBtn small {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.brandBtnActive {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.brandBtnActive span,
+.brandBtnActive small {
+  color: var(--white);
+}
+
 .dropzone {
   border: 2px dashed var(--ink-soft);
   border-radius: var(--radius-card);
