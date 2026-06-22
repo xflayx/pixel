@@ -1,0 +1,267 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 28px 32px 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wordmark {
+  font-size: 22px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.wordmark span {
+  color: var(--coral);
+}
+
+.eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.hero {
+  padding: 12px 32px 8px;
+  max-width: 760px;
+}
+
+.hero h1 {
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.05;
+}
+
+.hero p {
+  color: var(--ink-soft);
+  font-size: 16px;
+  margin-top: 14px;
+  max-width: 560px;
+}
+
+.main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+  gap: 24px;
+  padding: 24px 32px 48px;
+  align-items: start;
+}
+
+@media (max-width: 880px) {
+  .main {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-card);
+  padding: 22px;
+}
+
+.dropzone {
+  border: 2px dashed var(--ink-soft);
+  border-radius: var(--radius-card);
+  padding: 36px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(32, 35, 43, 0.03) 0px,
+    rgba(32, 35, 43, 0.03) 2px,
+    transparent 2px,
+    transparent 12px
+  );
+  transition: border-color 0.15s ease;
+}
+
+.dropzone:hover,
+.dropzone.dragOver {
+  border-color: var(--coral);
+}
+
+.dropzone input {
+  display: none;
+}
+
+.dropzoneLabel {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.dropzoneHint {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 6px;
+}
+
+.controlsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 18px 0 4px;
+}
+
+.controlGroup {
+  flex: 1;
+  min-width: 180px;
+}
+
+.controlGroup label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+  color: var(--ink-soft);
+}
+
+.controlGroup label strong {
+  color: var(--ink);
+}
+
+.controlGroup input[type="range"] {
+  width: 100%;
+  accent-color: var(--coral);
+}
+
+.canvasWrap {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  background: var(--paper);
+  border-radius: var(--radius-card);
+  padding: 16px;
+  overflow: auto;
+}
+
+.canvasWrap canvas {
+  max-width: 100%;
+  image-rendering: pixelated;
+  border-radius: 10px;
+}
+
+.placeholder {
+  color: var(--ink-soft);
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  text-align: center;
+  padding: 40px 10px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-peg);
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.btnPrimary {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--white);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sidebar h2 {
+  font-size: 18px;
+}
+
+.totalBadge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  background: var(--mustard);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-peg);
+  padding: 6px 14px;
+  margin: 12px 0 18px;
+  font-family: var(--font-mono), monospace;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.totalBadge span {
+  font-size: 20px;
+}
+
+.colorList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.colorRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(32, 35, 43, 0.08);
+}
+
+.swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  flex-shrink: 0;
+}
+
+.colorName {
+  flex: 1;
+}
+
+.colorHex {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.colorCount {
+  font-family: var(--font-mono), monospace;
+  font-weight: 700;
+  min-width: 44px;
+  text-align: right;
+}
+
+.footer {
+  padding: 18px 32px 32px;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
