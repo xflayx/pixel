@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import styles from "./page.module.css";
 import { pixelateImage, countBeads, type Grid } from "@/lib/pixelate";
+import { BRANDS, PALETTES, type BrandId } from "@/lib/palettes";
 
 const BOARD_PRESETS = [
   { label: "Placa pequena (14×14)", value: 14 },
@@ -14,6 +15,7 @@ const BOARD_PRESETS = [
 export default function Home() {
   const [imageEl, setImageEl] = useState<HTMLImageElement | null>(null);
   const [fileName, setFileName] = useState<string>("");
+  const [brand, setBrand] = useState<BrandId>("hama");
   const [columns, setColumns] = useState(29);
   const [alphaThreshold, setAlphaThreshold] = useState(40);
   const [dragOver, setDragOver] = useState(false);
@@ -94,10 +96,11 @@ export default function Home() {
 
   const handleGenerate = useCallback(() => {
     if (!imageEl) return;
-    const result = pixelateImage(imageEl, { columns, alphaThreshold });
+    const palette = PALETTES[brand];
+    const result = pixelateImage(imageEl, { columns, alphaThreshold, palette });
     setGrid(result.grid);
     renderGrid(result.grid, result.columns);
-  }, [imageEl, columns, alphaThreshold, renderGrid]);
+  }, [imageEl, columns, alphaThreshold, brand, renderGrid]);
 
   const handleDownload = useCallback(() => {
     const canvas = canvasRef.current;
@@ -134,6 +137,26 @@ export default function Home() {
 
       <main className={styles.main}>
         <div className={styles.card}>
+          <div className={styles.brandRow}>
+            <span className={styles.brandLabel}>Marca das contas</span>
+            <div className={styles.brandOptions}>
+              {BRANDS.map((b) => (
+                <button
+                  key={b.id}
+                  type="button"
+                  className={`${styles.brandBtn} ${brand === b.id ? styles.brandBtnActive : ""}`}
+                  onClick={() => {
+                    setBrand(b.id);
+                    setGrid(null);
+                  }}
+                >
+                  <span>{b.label}</span>
+                  <small>{b.description}</small>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div
             className={`${styles.dropzone} ${dragOver ? styles.dragOver : ""}`}
             onClick={() => fileInputRef.current?.click()}
@@ -249,7 +272,9 @@ export default function Home() {
                   <span className={styles.swatch} style={{ background: color.hex }} />
                   <span className={styles.colorName}>
                     {color.name}
-                    <div className={styles.colorHex}>{color.hex}</div>
+                    <div className={styles.colorHex}>
+                      {color.code} · {color.hex}
+                    </div>
                   </span>
                   <span className={styles.colorCount}>{count}×</span>
                 </li>
