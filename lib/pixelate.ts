@@ -1,4 +1,4 @@
-import { BEAD_PALETTE, hexToRgb, type BeadColor } from "./palettes";
+import { hexToRgb, type BeadColor } from "./palettes";
 
 export type Cell = { color: BeadColor | null };
 export type Grid = Cell[][];
@@ -32,16 +32,27 @@ function labF(t: number) {
   return t > Math.pow(delta, 3) ? Math.pow(t, 1 / 3) : t / (3 * delta * delta) + 4 / 29;
 }
 
-const PALETTE_LAB = BEAD_PALETTE.map((c) => {
-  const [r, g, b] = hexToRgb(c.hex);
-  return { color: c, lab: rgbToLab(r, g, b) };
-});
+// Cache simples por paleta, pra não recalcular o Lab de cada cor a cada pixel.
+const labCache = new Map<BeadColor[], { color: BeadColor; lab: [number, number, number] }[]>();
 
-export function nearestBeadColor(r: number, g: number, b: number): BeadColor {
+function getPaletteLab(palette: BeadColor[]) {
+  let cached = labCache.get(palette);
+  if (!cached) {
+    cached = palette.map((c) => {
+      const [r, g, b] = hexToRgb(c.hex);
+      return { color: c, lab: rgbToLab(r, g, b) };
+    });
+    labCache.set(palette, cached);
+  }
+  return cached;
+}
+
+export function nearestBeadColor(r: number, g: number, b: number, palette: BeadColor[]): BeadColor {
+  const paletteLab = getPaletteLab(palette);
   const lab = rgbToLab(r, g, b);
-  let best = PALETTE_LAB[0];
+  let best = paletteLab[0];
   let bestDist = Infinity;
-  for (const entry of PALETTE_LAB) {
+  for (const entry of paletteLab) {
     const dl = lab[0] - entry.lab[0];
     const da = lab[1] - entry.lab[1];
     const db = lab[2] - entry.lab[2];
@@ -58,14 +69,15 @@ export function nearestBeadColor(r: number, g: number, b: number): BeadColor {
 
 export type PixelateOptions = {
   columns: number;
-  alphaThreshold: number; // 0-255, abaixo disso a célula é considerada "vazia"
+  alphaThreshold: number; // 0-255, abaixo disso o pixel é considerado "vazio"
+  palette: BeadColor[];
 };
 
 export function pixelateImage(
   img: HTMLImageElement,
   opts: PixelateOptions
 ): { grid: Grid; rows: number; columns: number } {
-  const { columns, alphaThreshold } = opts;
+  const { columns, alphaThreshold, palette } = opts;
   const rows = Math.max(1, Math.round((columns * img.height) / img.width));
 
   const canvas = document.createElement("canvas");
@@ -105,7 +117,7 @@ export function pixelateImage(
           if (a < alphaThreshold) continue;
 
           opaquePixels++;
-          const match = nearestBeadColor(data[idx], data[idx + 1], data[idx + 2]);
+          const match = nearestBeadColor(data[idx], data[idx + 1], data[idx + 2], palette);
           const weight = a / 255;
           const existing = votes.get(match.id);
           if (existing) {
